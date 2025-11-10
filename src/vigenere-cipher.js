@@ -1,4 +1,4 @@
-const { NotImplementedError } = require('../lib');
+const { NotImplementedError } = require("../lib");
 
 /**
  * Implement class VigenereCipheringMachine that allows us to create
@@ -20,19 +20,67 @@ const { NotImplementedError } = require('../lib');
  *
  */
 class VigenereCipheringMachine {
-  encrypt() {
-    // Remove line below and write your code here
-    throw new NotImplementedError('Not implemented');
-  }
+    constructor(direct = true) {
+        this.direct = direct;
+    }
 
-  decrypt() {
-    // Remove line below and write your code here
-    throw new NotImplementedError('Not implemented');
-  }
+    encrypt(message, key) {
+        if (!message || !key) {
+            throw new Error("Incorrect arguments!");
+        }
+
+        message = message.toUpperCase();
+        key = key.toUpperCase();
+        let result = "";
+        let keyIndex = 0;
+
+        for (let i = 0; i < message.length; i++) {
+            const char = message[i];
+
+            if (char >= "A" && char <= "Z") {
+                const messageCode = char.charCodeAt(0) - 65;
+                const keyCode = key[keyIndex % key.length].charCodeAt(0) - 65;
+                const encryptedCode = (messageCode + keyCode) % 26;
+                result += String.fromCharCode(encryptedCode + 65);
+                keyIndex++;
+            } else {
+                result += char;
+            }
+        }
+
+        return this.direct ? result : result.split("").reverse().join("");
+    }
+
+    decrypt(encryptedMessage, key) {
+        if (!encryptedMessage || !key) {
+            throw new Error("Incorrect arguments!");
+        }
+
+        encryptedMessage = encryptedMessage.toUpperCase();
+        key = key.toUpperCase();
+        let result = "";
+        let keyIndex = 0;
+
+        for (let i = 0; i < encryptedMessage.length; i++) {
+            const char = encryptedMessage[i];
+
+            if (char >= "A" && char <= "Z") {
+                const encryptedCode = char.charCodeAt(0) - 65;
+                const keyCode = key[keyIndex % key.length].charCodeAt(0) - 65;
+                const decryptedCode = (encryptedCode - keyCode + 26) % 26;
+                result += String.fromCharCode(decryptedCode + 65);
+                keyIndex++;
+            } else {
+                result += char;
+            }
+        }
+
+        return this.direct ? result : result.split("").reverse().join("");
+    }
 }
 
 module.exports = {
-  directMachine: new VigenereCipheringMachine(),
-  reverseMachine: new VigenereCipheringMachine(false),
-  VigenereCipheringMachine,
+    directMachine: new VigenereCipheringMachine(),
+    reverseMachine: new VigenereCipheringMachine(false),
+    VigenereCipheringMachine,
 };
